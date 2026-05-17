@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/v1/todos")
 public class TodoController {
 private static List<Todo>todoList;
 public TodoController(){
@@ -14,11 +15,11 @@ public TodoController(){
     todoList.add(new Todo(1,false,"Todo 1",1));
     todoList.add(new Todo(2,true,"Todo 2",1));
 }
-@GetMapping("/todos")
+@GetMapping
     public ResponseEntity<List<Todo>> getTodos(){
     return ResponseEntity.status(HttpStatus.OK).body(todoList);
 }
-
+@PostMapping
 public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
     /*
     * we can use this annotation to set the status code @ResponseStatus(HttpStatus.CREATED)
@@ -27,7 +28,7 @@ public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
     todoList.add(newTodo);
    return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
 }
-    @GetMapping("/todos/{todoId}")
+    @GetMapping("/{todoId}")
     public ResponseEntity<?>getTodoById(@PathVariable int todoId ){
             for(Todo todo:todoList){
                 if(todo.getId()==todoId){
@@ -37,5 +38,17 @@ public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
 
             return  ResponseEntity.
                     status(HttpStatus.NOT_FOUND).body(Map.of("message","Todo Not Found"));
+    }
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<?>deleteTodoById(@PathVariable int todoId){
+    boolean removed=todoList.removeIf(todo->todo.getId()==todoId);
+    if(removed){
+        return ResponseEntity.ok(
+                Map.of("message","Todo deleted succesfully")
+        );
+    }
+    return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(Map.of("message","Todo not found"));
     }
 }
