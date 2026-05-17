@@ -51,4 +51,16 @@ public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
             .status(HttpStatus.NOT_FOUND)
             .body(Map.of("message","Todo not found"));
     }
+    @PutMapping("/{todoId}")
+    public ResponseEntity<?>updateTodo(@PathVariable int todoId,@RequestBody Todo updatedTodo){
+    for(int i=0;i<todoList.size();i++){
+        Todo existingTodo=todoList.get(i);
+        if(existingTodo.getId()==todoId){
+            updatedTodo.setId(todoId);
+            todoList.set(i,updatedTodo);
+            return ResponseEntity.ok(updatedTodo);
+        }
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message","Todo Not Found"));
+    }
 }
