@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/todos")
@@ -62,5 +63,28 @@ public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
         }
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message","Todo Not Found"));
+    }
+    @PatchMapping("/{todoId}")
+    public ResponseEntity<?>patchTodo(
+            @PathVariable int todoId,
+            @RequestBody Map<String, Object>updates
+    ){
+    for(Todo todo:todoList){
+        if(todo.getId()==todoId){
+            if(updates.containsKey("title")){
+                todo.setTitle((String)updates.get("title"));
+            }
+        }
+        if(updates.containsKey("completed")){
+            todo.setCompleted((Boolean)updates.get("completed"));
+        }
+        if(updates.containsKey("userId")){
+            todo.setUserId((Integer)updates.get("userId"));
+        }
+        return ResponseEntity.ok(todo);
+    }
+    return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(Map.of("message","Todo Not Found"));
     }
 }
