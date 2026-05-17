@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class TodoController {
@@ -17,7 +18,6 @@ public TodoController(){
     public ResponseEntity<List<Todo>> getTodos(){
     return ResponseEntity.status(HttpStatus.OK).body(todoList);
 }
-@PostMapping("/todos")
 
 public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
     /*
@@ -27,5 +27,15 @@ public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
     todoList.add(newTodo);
    return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
 }
+    @GetMapping("/todos/{todoId}")
+    public ResponseEntity<?>getTodoById(@PathVariable int todoId ){
+            for(Todo todo:todoList){
+                if(todo.getId()==todoId){
+                    return ResponseEntity.ok(todo);
+                }
+            }
 
+            return  ResponseEntity.
+                    status(HttpStatus.NOT_FOUND).body(Map.of("message","Todo Not Found"));
+    }
 }
