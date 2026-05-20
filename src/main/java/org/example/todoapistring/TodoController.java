@@ -1,29 +1,41 @@
 package org.example.todoapistring;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/todos")
 public class TodoController {
+
+
+    private TodoService todoService;
+    private TodoService todoService2;
 private static List<Todo>todoList;
-public TodoController(){
+
+public TodoController(
+        @Qualifier("anotherTodoService") TodoService todoService,
+        @Qualifier("fakeTodoService")TodoService todoService2){
+    this.todoService = todoService;
+    this.todoService2=todoService2;
     todoList=new ArrayList<>();
     todoList.add(new Todo(1,false,"Todo 1",1));
-    todoList.add(new Todo(2,true,"Todo 2",1));
+    todoList.add(new Todo(2,true,"Todo 2",2));
 }
 @GetMapping
-    public ResponseEntity<List<Todo>> getTodos(){
-    return ResponseEntity.status(HttpStatus.OK).body(todoList);
+    public ResponseEntity<List<Todo>> getTodos(@RequestParam(required = false) Boolean isCompleted){
+    System.out.println("Incoming Query params"+isCompleted);
+    return ResponseEntity.ok(todoList);
 }
 @PostMapping
 public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
     /*
-    * we can use this annotation to set the status code @ResponseStatus(HttpStatus.CREATED)
+    * we can use this annotation
+    *  to  set the status code @ResponseStatus(HttpStatus.CREATED)
     *
     * */
     todoList.add(newTodo);
@@ -81,7 +93,7 @@ public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
         if(updates.containsKey("userId")){
             todo.setUserId((Integer)updates.get("userId"));
         }
-        return ResponseEntity.ok(todo);
+         return ResponseEntity.ok(todo);
     }
     return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
